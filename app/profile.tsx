@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import RecipeCard from '../src/components/common/RecipeCard';
 import IngredientModal from '../src/components/common/IngredientModal';
 import { mockRecipesData, createMasonryData, Recipe } from '../src/data/mockRecipes';
@@ -38,6 +39,10 @@ export default function ProfileScreen() {
   const handleCartPress = (recipe: Recipe) => {
     setSelectedRecipe(recipe);
     setIsIngredientModalVisible(true);
+  };
+
+  const handleEditProfile = () => {
+    router.push('/edit-profile');
   };
 
   const renderColumn = (columnData: any[], isLeftColumn: boolean) => (
@@ -86,7 +91,7 @@ export default function ProfileScreen() {
       <Text style={styles.username}>@mathew.third</Text>
       <Text style={styles.bio}>early beta user 🍳</Text>
       
-      <TouchableOpacity style={styles.editButton}>
+      <TouchableOpacity style={styles.editButton} onPress={handleEditProfile}>
         <Text style={styles.editButtonText}>Edit profile</Text>
       </TouchableOpacity>
     </View>
