@@ -12,7 +12,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import * as ImagePicker from 'expo-image-picker';
+// import * as ImagePicker from 'expo-image-picker';
 
 export default function EditProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -33,23 +33,8 @@ export default function EditProfileScreen() {
   };
 
   const handleImagePicker = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
-    if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Please grant camera roll permissions to change your profile photo.');
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
-
-    if (!result.canceled) {
-      setProfileImage({ uri: result.assets[0].uri });
-    }
+    // Temporarily disabled until we rebuild the development build
+    Alert.alert('Photo Picker', 'Photo picker functionality will be available after rebuilding the development build with expo-image-picker.');
   };
 
   const handleFieldEdit = (field: string) => {
@@ -289,4 +274,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#C8C8C8',
     marginHorizontal: 0,
   },
-}); 
+});
