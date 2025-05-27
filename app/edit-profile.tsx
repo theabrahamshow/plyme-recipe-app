@@ -12,7 +12,13 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import * as ImagePicker from 'expo-image-picker';
+// Conditional import to handle native module availability
+let ImagePicker: any = null;
+try {
+  ImagePicker = require('expo-image-picker');
+} catch (error) {
+  console.log('expo-image-picker not available:', error);
+}
 
 export default function EditProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -44,6 +50,16 @@ export default function EditProfileScreen() {
         {
           text: 'Photo Library',
           onPress: async () => {
+            // Check if ImagePicker module is available
+            if (!ImagePicker || !ImagePicker.requestMediaLibraryPermissionsAsync) {
+              Alert.alert(
+                'Feature Unavailable',
+                'Photo library access requires a development build with expo-image-picker. Please use "Use Demo Photo" for now, or rebuild the development build.',
+                [{ text: 'OK' }]
+              );
+              return;
+            }
+
             try {
               // Check permissions
               const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -70,7 +86,11 @@ export default function EditProfileScreen() {
               }
             } catch (error) {
               console.error('Image picker error:', error);
-              Alert.alert('Error', 'Failed to open photo library. Please try again.');
+              Alert.alert(
+                'Error', 
+                'Failed to access photo library. Please try "Use Demo Photo" instead.',
+                [{ text: 'OK' }]
+              );
             }
           }
         },
