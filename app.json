@@ -12,7 +12,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.cqjack.expoappboilerplate",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to let you choose a profile picture."
       }
     },
     "android": {
@@ -42,7 +43,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos to let you change your profile picture."
+          "photosPermission": "The app accesses your photos to let you change your profile picture.",
+          "cameraPermission": "The app accesses your camera to let you take a new profile picture."
         }
       ]
     ],

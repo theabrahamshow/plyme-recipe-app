@@ -7,144 +7,110 @@ import {
   Image,
   TextInput,
   ScrollView,
-  Alert
+  Alert,
+  Modal,
+  Pressable
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-// Conditional import to handle native module availability
-let ImagePicker: any = null;
-try {
-  ImagePicker = require('expo-image-picker');
-} catch (error) {
-  console.log('expo-image-picker not available:', error);
-}
+
+const demoPhotos = [
+  require('../assets/images/profile-avatar.png'),
+  require('../assets/images/creator-avatar.png'),
+  require('../assets/images/recipe1.png'),
+];
 
 export default function EditProfileScreen() {
-  const insets = useSafeAreaInsets();
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
+  const [showFirstNameModal, setShowFirstNameModal] = useState(false);
+  const [showLastNameModal, setShowLastNameModal] = useState(false);
+  const [username, setUsername] = useState('6h6sxg6bf27791');
+  const [firstName, setFirstName] = useState('Matty');
+  const [lastName, setLastName] = useState('Abraham');
   
-  // Form state
-  const [formData, setFormData] = useState({
-    username: 'mathew.third',
-    firstName: 'Mathew',
-    lastName: 'Abraham',
-    email: 'ladadeladadi@gmail.com',
-    region: 'Asia'
-  });
-  
-  const [profileImage, setProfileImage] = useState(require('../assets/images/profile-avatar.png'));
+  // Original values to track changes
+  const [originalUsername] = useState('6h6sxg6bf27791');
+  const [originalFirstName] = useState('Matty');
+  const [originalLastName] = useState('Abraham');
 
   const handleBack = () => {
-    router.back();
+    router.push('/profile');
   };
 
-  const handleImagePicker = async () => {
+  const handlePhotoPress = () => {
     Alert.alert(
       'Change Profile Photo',
-      'Choose your photo source',
+      'Choose an option',
       [
         {
-          text: 'Cancel',
-          style: 'cancel'
-        },
-        {
           text: 'Photo Library',
-          onPress: async () => {
-            // Check if ImagePicker module is available
-            if (!ImagePicker || !ImagePicker.requestMediaLibraryPermissionsAsync) {
-              Alert.alert(
-                'Feature Unavailable',
-                'Photo library access requires a development build with expo-image-picker. Please use "Use Demo Photo" for now, or rebuild the development build.',
-                [{ text: 'OK' }]
-              );
-              return;
-            }
-
-            try {
-              // Check permissions
-              const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-              
-              if (status !== 'granted') {
-                Alert.alert(
-                  'Permission Required',
-                  'Please grant photo library access to change your profile picture.',
-                  [{ text: 'OK' }]
-                );
-                return;
-              }
-
-              // Launch image picker
-              const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
-                aspect: [1, 1],
-                quality: 0.8,
-              });
-
-              if (!result.canceled && result.assets && result.assets.length > 0) {
-                setProfileImage({ uri: result.assets[0].uri });
-              }
-            } catch (error) {
-              console.error('Image picker error:', error);
-              Alert.alert(
-                'Error', 
-                'Failed to access photo library. Please try "Use Demo Photo" instead.',
-                [{ text: 'OK' }]
-              );
-            }
-          }
+          onPress: () => Alert.alert('Coming Soon', 'Photo library access will be available in a future update.'),
         },
         {
-          text: 'Use Demo Photo',
+          text: 'Change Demo Photo',
           onPress: () => {
-            // Cycle through different demo photos
-            const demoPhotos = [
-              require('../assets/images/profile-avatar.png'),
-              require('../assets/images/creator-avatar.png'),
-              require('../assets/images/recipe1.png'),
-            ];
-            const currentIndex = demoPhotos.findIndex(photo => 
-              JSON.stringify(photo) === JSON.stringify(profileImage)
-            );
-            const nextIndex = (currentIndex + 1) % demoPhotos.length;
-            setProfileImage(demoPhotos[nextIndex]);
-          }
-        }
+            const nextIndex = (currentPhotoIndex + 1) % demoPhotos.length;
+            setCurrentPhotoIndex(nextIndex);
+          },
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
       ]
     );
   };
 
-  const handleFieldEdit = (field: string) => {
-    // For now, we'll just show an alert. In a real app, this would navigate to individual edit screens
-    const fieldNames: { [key: string]: string } = {
-      username: 'Username',
-      firstName: 'First Name', 
-      lastName: 'Last Name'
-    };
-    
-    Alert.alert(
-      'Edit Field', 
-      `Edit ${fieldNames[field]} functionality would be implemented here.`,
-      [{ text: 'OK', style: 'default' }]
-    );
+  const handleFieldPress = (fieldName: string) => {
+    if (fieldName === 'Username') {
+      setShowUsernameModal(true);
+    } else if (fieldName === 'First Name') {
+      setShowFirstNameModal(true);
+    } else if (fieldName === 'Last Name') {
+      setShowLastNameModal(true);
+    } else {
+      Alert.alert(
+        `Edit ${fieldName}`,
+        `You tapped on ${fieldName}. This feature will be implemented soon.`,
+        [{ text: 'OK' }]
+      );
+    }
   };
 
-  const updateFormData = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  const handleUsernameSubmit = () => {
+    setShowUsernameModal(false);
   };
+
+  const handleFirstNameSubmit = () => {
+    setShowFirstNameModal(false);
+  };
+
+  const handleLastNameSubmit = () => {
+    setShowLastNameModal(false);
+  };
+
+  const handleModalDismiss = () => {
+    setShowUsernameModal(false);
+    setShowFirstNameModal(false);
+    setShowLastNameModal(false);
+  };
+
+  // Check if values have changed
+  const isUsernameChanged = username !== originalUsername;
+  const isFirstNameChanged = firstName !== originalFirstName;
+  const isLastNameChanged = lastName !== originalLastName;
 
   const Header = () => (
-    <View style={[styles.headerContainer, { paddingTop: insets.top + 8 }]}>
+    <View style={styles.headerContainer}>
       <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-        <Ionicons name="chevron-back" size={24} color="#09121F" />
+        <Ionicons name="arrow-back" size={24} color="#000" />
       </TouchableOpacity>
       
       <Text style={styles.headerTitle}>Edit Profile</Text>
       
-      <View style={styles.headerSpacer} />
+      <View style={styles.headerRight} />
     </View>
   );
 
@@ -152,8 +118,11 @@ export default function EditProfileScreen() {
     <View style={styles.profilePhotoContainer}>
       <View style={styles.avatarOuterCircle}>
         <View style={styles.avatarInnerCircle}>
-          <Image source={profileImage} style={styles.avatarImage} />
-          <TouchableOpacity style={styles.cameraButton} onPress={handleImagePicker}>
+          <Image source={demoPhotos[currentPhotoIndex]} style={styles.avatarImage} />
+          <TouchableOpacity 
+            style={styles.cameraButton} 
+            onPress={handlePhotoPress}
+          >
             <Ionicons name="camera" size={20} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
@@ -174,7 +143,7 @@ export default function EditProfileScreen() {
   }) => (
     <TouchableOpacity 
       style={styles.fieldContainer} 
-      onPress={() => editable && handleFieldEdit(field)}
+      onPress={() => editable && handleFieldPress(field)}
       disabled={!editable}
       activeOpacity={editable ? 0.7 : 1}
     >
@@ -194,49 +163,133 @@ export default function EditProfileScreen() {
     <View style={styles.formContainer}>
       <FormField 
         label="Username" 
-        value={formData.username} 
-        field="username" 
+        value={username} 
+        field="Username" 
       />
       <View style={styles.separator} />
       
       <FormField 
         label="First Name" 
-        value={formData.firstName} 
-        field="firstName" 
+        value={firstName} 
+        field="First Name" 
       />
       <View style={styles.separator} />
       
       <FormField 
         label="Last Name" 
-        value={formData.lastName} 
-        field="lastName" 
+        value={lastName} 
+        field="Last Name" 
       />
       <View style={styles.separator} />
       
       <FormField 
         label="Email" 
-        value={formData.email} 
-        field="email" 
+        value="matty@plyme.com" 
+        field="Email" 
         editable={false}
       />
       <View style={styles.separator} />
       
       <FormField 
         label="Region" 
-        value={formData.region} 
-        field="region" 
+        value="United States" 
+        field="Region" 
         editable={false}
       />
     </View>
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right', 'bottom']}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <Header />
         <ProfilePhotoSection />
         <FormSection />
       </ScrollView>
+
+      {/* Username Edit Modal */}
+      <Modal
+        visible={showUsernameModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={handleModalDismiss}
+      >
+        <Pressable style={styles.modalOverlay} onPress={handleModalDismiss}>
+          <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
+            <View style={styles.modalHandle} />
+            <Text style={styles.modalTitle}>Edit username</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={username}
+              onChangeText={setUsername}
+              placeholder="Enter username"
+              autoFocus={true}
+            />
+            <TouchableOpacity 
+              style={[styles.saveButton, isUsernameChanged && styles.saveButtonActive]} 
+              onPress={handleUsernameSubmit}
+            >
+              <Text style={[styles.saveButtonText, isUsernameChanged && styles.saveButtonTextActive]}>Save</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      {/* First Name Edit Modal */}
+      <Modal
+        visible={showFirstNameModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={handleModalDismiss}
+      >
+        <Pressable style={styles.modalOverlay} onPress={handleModalDismiss}>
+          <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
+            <View style={styles.modalHandle} />
+            <Text style={styles.modalTitle}>Edit first name</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={firstName}
+              onChangeText={setFirstName}
+              placeholder="Enter first name"
+              autoFocus={true}
+            />
+            <TouchableOpacity 
+              style={[styles.saveButton, isFirstNameChanged && styles.saveButtonActive]} 
+              onPress={handleFirstNameSubmit}
+            >
+              <Text style={[styles.saveButtonText, isFirstNameChanged && styles.saveButtonTextActive]}>Save</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      {/* Last Name Edit Modal */}
+      <Modal
+        visible={showLastNameModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={handleModalDismiss}
+      >
+        <Pressable style={styles.modalOverlay} onPress={handleModalDismiss}>
+          <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
+            <View style={styles.modalHandle} />
+            <Text style={styles.modalTitle}>Edit last name</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={lastName}
+              onChangeText={setLastName}
+              placeholder="Enter last name"
+              autoFocus={true}
+            />
+            <TouchableOpacity 
+              style={[styles.saveButton, isLastNameChanged && styles.saveButtonActive]} 
+              onPress={handleLastNameSubmit}
+            >
+              <Text style={[styles.saveButtonText, isLastNameChanged && styles.saveButtonTextActive]}>Save</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -253,6 +306,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 21,
+    paddingTop: 8,
     paddingBottom: 16,
     backgroundColor: '#FFFFFF',
   },
@@ -270,8 +324,8 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0.5 },
     textShadowRadius: 0,
   },
-  headerSpacer: {
-    width: 40, // Same width as back button to center title
+  headerRight: {
+    width: 40,
   },
   profilePhotoContainer: {
     alignItems: 'center',
@@ -361,5 +415,62 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#C8C8C8',
     marginHorizontal: 0,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingHorizontal: 24,
+    paddingTop: 12,
+    paddingBottom: 34,
+    minHeight: 200,
+  },
+  modalHandle: {
+    width: 36,
+    height: 4,
+    backgroundColor: '#D1D1D6',
+    borderRadius: 2,
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#000',
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  modalInput: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#000',
+    textAlign: 'center',
+    paddingVertical: 20,
+    borderWidth: 0,
+    backgroundColor: 'transparent',
+  },
+  saveButton: {
+    backgroundColor: '#D1D1D6',
+    borderRadius: 14,
+    paddingVertical: 16,
+    marginTop: 20,
+    marginHorizontal: 20,
+  },
+  saveButtonText: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#000',
+    textAlign: 'center',
+  },
+  saveButtonActive: {
+    backgroundColor: '#5A3929',
+  },
+  saveButtonTextActive: {
+    color: '#FFFFFF',
   },
 });

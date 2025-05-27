@@ -45,6 +45,10 @@ export default function ProfileScreen() {
     router.push('/edit-profile');
   };
 
+  const handleSettings = () => {
+    router.push('/settings');
+  };
+
   const renderColumn = (columnData: any[], isLeftColumn: boolean) => (
     <View style={[styles.column, { width: columnWidth }]}>
       {columnData.map((item, index) => (
@@ -72,7 +76,7 @@ export default function ProfileScreen() {
         <TouchableOpacity style={styles.headerIcon}>
           <Ionicons name="notifications" size={24} color="#5A3929" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.headerIcon}>
+        <TouchableOpacity style={styles.headerIcon} onPress={handleSettings}>
           <Ionicons name="settings" size={24} color="#5A3929" />
         </TouchableOpacity>
       </View>

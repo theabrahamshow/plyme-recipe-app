@@ -7,6 +7,12 @@ import { Animated } from 'react-native';
 export default function AppLayout() {
   const pathname = usePathname();
   const isSlideshow = pathname?.includes('/slideshow');
+  const isEditProfile = pathname?.includes('/edit-profile');
+  const isSettings = pathname?.includes('/settings');
+  const isAccount = pathname?.includes('/account');
+  const isNotifications = pathname?.includes('/notifications');
+  const isReportProblem = pathname?.includes('/report-problem');
+
   const animatedValue = useRef(new Animated.Value(isSlideshow ? 1 : 0)).current;
 
   useEffect(() => {
@@ -20,7 +26,7 @@ export default function AppLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarStyle: isSlideshow ? {
+        tabBarStyle: (isEditProfile || isSettings || isAccount || isNotifications || isReportProblem) ? { display: 'none' } : isSlideshow ? {
           // Dark navigation for slideshow
           backgroundColor: '#000000',
           borderTopWidth: 0,
@@ -93,6 +99,11 @@ export default function AppLayout() {
       {/* Hide auxiliary routes so they don't appear as tabs */}
       <Tabs.Screen name="(recipe)" options={{ href: null }} />
       <Tabs.Screen name="edit-profile" options={{ href: null }} />
+      <Tabs.Screen name="settings" options={{ href: null }} />
+      <Tabs.Screen name="account" options={{ href: null }} />
+      <Tabs.Screen name="notifications" options={{ href: null }} />
+      <Tabs.Screen name="report-problem" options={{ href: null }} />
+
       <Tabs.Screen name="_sitemap" options={{ href: null }} />
       <Tabs.Screen name="+not-found" options={{ href: null }} />
     </Tabs>
