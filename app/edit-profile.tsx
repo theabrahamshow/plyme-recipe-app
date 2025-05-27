@@ -12,7 +12,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import * as ImagePicker from 'expo-image-picker';
+// import * as ImagePicker from 'expo-image-picker'; // Temporarily disabled to prevent crashes
 
 export default function EditProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -33,27 +33,33 @@ export default function EditProfileScreen() {
   };
 
   const handleImagePicker = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
-    if (status !== 'granted') {
-      Alert.alert(
-        'Permission needed', 
-        'Please grant camera roll permissions to change your profile photo.',
-        [{ text: 'OK', style: 'default' }]
-      );
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
-
-    if (!result.canceled) {
-      setProfileImage({ uri: result.assets[0].uri });
-    }
+    // Temporary safe implementation to prevent crashes
+    Alert.alert(
+      'Change Profile Photo',
+      'Photo picker functionality is being debugged. This feature will be available soon.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'Use Demo Photo',
+          onPress: () => {
+            // Cycle through different demo photos
+            const demoPhotos = [
+              require('../assets/images/profile-avatar.png'),
+              require('../assets/images/creator-avatar.png'),
+              require('../assets/images/recipe1.png'),
+            ];
+            const currentIndex = demoPhotos.findIndex(photo => 
+              JSON.stringify(photo) === JSON.stringify(profileImage)
+            );
+            const nextIndex = (currentIndex + 1) % demoPhotos.length;
+            setProfileImage(demoPhotos[nextIndex]);
+          }
+        }
+      ]
+    );
   };
 
   const handleFieldEdit = (field: string) => {
