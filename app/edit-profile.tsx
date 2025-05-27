@@ -12,7 +12,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-// import * as ImagePicker from 'expo-image-picker'; // Temporarily disabled to prevent crashes
+import * as ImagePicker from 'expo-image-picker';
 
 export default function EditProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -33,14 +33,46 @@ export default function EditProfileScreen() {
   };
 
   const handleImagePicker = async () => {
-    // Temporary safe implementation to prevent crashes
     Alert.alert(
       'Change Profile Photo',
-      'Photo picker functionality is being debugged. This feature will be available soon.',
+      'Choose your photo source',
       [
         {
           text: 'Cancel',
           style: 'cancel'
+        },
+        {
+          text: 'Photo Library',
+          onPress: async () => {
+            try {
+              // Check permissions
+              const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+              
+              if (status !== 'granted') {
+                Alert.alert(
+                  'Permission Required',
+                  'Please grant photo library access to change your profile picture.',
+                  [{ text: 'OK' }]
+                );
+                return;
+              }
+
+              // Launch image picker
+              const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 0.8,
+              });
+
+              if (!result.canceled && result.assets && result.assets.length > 0) {
+                setProfileImage({ uri: result.assets[0].uri });
+              }
+            } catch (error) {
+              console.error('Image picker error:', error);
+              Alert.alert('Error', 'Failed to open photo library. Please try again.');
+            }
+          }
         },
         {
           text: 'Use Demo Photo',
