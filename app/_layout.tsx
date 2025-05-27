@@ -92,6 +92,7 @@ export default function AppLayout() {
       />
       {/* Hide auxiliary routes so they don't appear as tabs */}
       <Tabs.Screen name="(recipe)" options={{ href: null }} />
+      <Tabs.Screen name="edit-profile" options={{ href: null }} />
       <Tabs.Screen name="_sitemap" options={{ href: null }} />
       <Tabs.Screen name="+not-found" options={{ href: null }} />
     </Tabs>

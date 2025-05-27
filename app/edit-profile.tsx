@@ -34,12 +34,26 @@ export default function EditProfileScreen() {
 
   const handleImagePicker = async () => {
     // Temporarily disabled until we rebuild the development build
-    Alert.alert('Photo Picker', 'Photo picker functionality will be available after rebuilding the development build with expo-image-picker.');
+    Alert.alert(
+      'Photo Picker', 
+      'Photo picker functionality will be available after rebuilding the development build with expo-image-picker.',
+      [{ text: 'OK', style: 'default' }]
+    );
   };
 
   const handleFieldEdit = (field: string) => {
     // For now, we'll just show an alert. In a real app, this would navigate to individual edit screens
-    Alert.alert('Edit Field', `Edit ${field} functionality would be implemented here.`);
+    const fieldNames: { [key: string]: string } = {
+      username: 'Username',
+      firstName: 'First Name', 
+      lastName: 'Last Name'
+    };
+    
+    Alert.alert(
+      'Edit Field', 
+      `Edit ${fieldNames[field]} functionality would be implemented here.`,
+      [{ text: 'OK', style: 'default' }]
+    );
   };
 
   const updateFormData = (field: string, value: string) => {
@@ -89,6 +103,7 @@ export default function EditProfileScreen() {
       style={styles.fieldContainer} 
       onPress={() => editable && handleFieldEdit(field)}
       disabled={!editable}
+      activeOpacity={editable ? 0.7 : 1}
     >
       <Text style={styles.fieldLabel}>{label}</Text>
       <View style={styles.fieldValueContainer}>
