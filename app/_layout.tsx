@@ -81,9 +81,9 @@ export default function AppLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: "Search",
+          title: "Feed",
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome name="search" size={24} color={color} />
+            <FontAwesome name="play-circle" size={24} color={color} />
           ),
         }}
       />

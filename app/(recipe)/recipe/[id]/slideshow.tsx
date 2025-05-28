@@ -15,77 +15,24 @@ import { FontAwesome } from '@expo/vector-icons';
 import ActionButton from '../../../../src/components/common/ActionButton';
 import PaginationDots from '../../../../src/components/common/PaginationDots';
 import IngredientModal from '../../../../src/components/common/IngredientModal';
+import { mockRecipesData } from '../../../../src/data/mockRecipes';
 
-// Mock data for recipes with multiple images per recipe
-const mockRecipes = [
-  {
-    id: '1',
-    title: 'Greek Yogurt Bowl',
+// Convert mockRecipesData to slideshow format with multiple images per recipe
+const createSlideshowData = (recipes: any[]) => {
+  return recipes.map(recipe => ({
+    ...recipe,
     images: [
-    'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=600&h=800&fit=crop',
-    'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=600&h=800&fit=crop',
-    'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=600&h=800&fit=crop',
-    'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=600&h=800&fit=crop',
-    'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=600&h=800&fit=crop',
-  ],
-  },
-  {
-    id: '2',
-    title: 'Air-Fryer Tenders',
-    images: [
-    'https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=600&h=800&fit=crop',
-    'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=600&h=800&fit=crop',
-  ],
-  },
-  {
-    id: '3',
-    title: 'Pizza Buns',
-    images: [
-    'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&h=800&fit=crop',
-    'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=600&h=800&fit=crop',
-  ],
-  },
-  {
-    id: '4',
-    title: 'Lazy Chana',
-    images: [
-    'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&h=800&fit=crop',
-    'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=600&h=800&fit=crop',
-  ],
-  },
-  {
-    id: '5',
-    title: 'Smashed Avo',
-    images: [
-    'https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=600&h=800&fit=crop',
-    'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=600&h=800&fit=crop',
-  ],
-  },
-  {
-    id: '6',
-    title: 'Air-Fryer Cookies',
-    images: [
-    'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&h=800&fit=crop',
-    'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=600&h=800&fit=crop',
-  ],
-  },
-  {
-    id: '7',
-    title: 'Glow-Up Ramen',
-    images: [
-    'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=600&h=800&fit=crop',
-    'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=600&h=800&fit=crop',
-  ],
-  },
-  {
-    id: '8',
-    title: 'Pasta Night',
-    images: [
-    'https://images.unsplash.com/photo-1563379091339-03246963d96c?w=600&h=800&fit=crop',
-    'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=600&h=800&fit=crop',
-  ],
-  },
-];
+      // For now, we'll use the same image multiple times to simulate steps
+      // In real implementation, each recipe would have multiple step images
+      Image.resolveAssetSource(recipe.imageSource).uri,
+      Image.resolveAssetSource(recipe.imageSource).uri,
+      Image.resolveAssetSource(recipe.imageSource).uri,
+      Image.resolveAssetSource(recipe.imageSource).uri,
+    ]
+  }));
+};
+
+const mockRecipes = createSlideshowData(mockRecipesData);
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -149,7 +96,13 @@ const RecipeSlide = ({ recipe, isActive, router }: { recipe: any; isActive: bool
         scrollEnabled={isActive} // Only allow horizontal scrolling when this recipe is active
       />
 
-
+      {/* Recipe Title and Metadata Overlay */}
+      <View style={styles.recipeInfo}>
+        <Text style={styles.recipeTitle}>{recipe.title}</Text>
+        <Text style={styles.recipeMetadata}>
+          {recipe.prepTime} min • {recipe.calories} cal
+        </Text>
+      </View>
 
       {/* Pagination Dots for Steps */}
       <View style={styles.paginationContainer}>
@@ -193,7 +146,7 @@ const RecipeSlide = ({ recipe, isActive, router }: { recipe: any; isActive: bool
         onClose={() => setIsIngredientModalVisible(false)}
         recipeTitle={recipe.title}
         servings={2}
-        calories={350}
+        calories={recipe.calories}
         recipeImage={recipe.images[0]}
       />
     </View>
@@ -272,7 +225,31 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-
+  recipeInfo: {
+    position: 'absolute',
+    bottom: 140,
+    left: 20,
+    right: 80, // Leave space for action buttons
+  },
+  recipeTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontFamily: 'Inter',
+    marginBottom: 4,
+    textShadowColor: 'rgba(0, 0, 0, 0.7)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
+  recipeMetadata: {
+    fontSize: 14,
+    color: '#FFFFFF',
+    fontFamily: 'Inter',
+    fontWeight: '500',
+    textShadowColor: 'rgba(0, 0, 0, 0.7)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
   paginationContainer: {
     position: 'absolute',
     bottom: 120, // Adjusted for new 80px nav bar height + padding
@@ -288,5 +265,4 @@ const styles = StyleSheet.create({
     width: 52, // Updated for larger button size
     gap: 20, // TikTok-style spacing
   },
-
 }); 
